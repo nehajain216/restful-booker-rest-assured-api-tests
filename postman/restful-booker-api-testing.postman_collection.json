@@ -1,0 +1,477 @@
+{
+	"info": {
+		"_postman_id": "e1191fdb-ba81-4b59-8d67-77d6c5be0880",
+		"name": "restful-booker-api-testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8415476"
+	},
+	"item": [
+		{
+			"name": "Booking Flow",
+			"item": [
+				{
+					"name": "HealthCheck",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check Application Health\", ()=>{",
+									"    pm.expect(pm.response.code).is.eql(201);",
+									"    pm.expect(pm.response.text()).equal(\"Created\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ping",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auth - CreateToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Authenticate user\",() => {",
+									"    pm.expect(pm.response.code).eql(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.token).not.eq(undefined);",
+									"    postman.clearEnvironmentVariable(\"access_token\");",
+									"    postman.setEnvironmentVariable(\"access_token\",jsonData.token);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"admin\",\n    \"password\" : \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Create New booking\",() =>{",
+									"    pm.expect(pm.response.code).is.eq(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.booking.firstname).to.equal(\"Neha\");",
+									"    pm.expect(jsonData.booking.lastname).to.equal(\"Jain\");",
+									"    pm.expect(jsonData.booking.totalprice).to.equal(201);",
+									"    pm.expect(jsonData.booking.depositpaid).to.equal(true);",
+									"    pm.expect(jsonData.booking.bookingdates.checkin).to.equal(\"2023-03-05\");",
+									"    pm.expect(jsonData.booking.bookingdates.checkout).to.equal(\"2023-03-08\");",
+									"    postman.clearEnvironmentVariable(\"booking_id\");",
+									"    postman.setEnvironmentVariable(\"booking_id\",jsonData.bookingid);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\" : \"Neha\",\n    \"lastname\" : \"Jain\",\n    \"totalprice\" : 201,\n    \"depositpaid\" : true,\n    \"bookingdates\" : {\n        \"checkin\" : \"2023-03-05\",\n        \"checkout\" : \"2023-03-08\"\n    },\n    \"additionalneeds\" : \"Breakfast\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"   // pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"Test response data\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.firstname).to.equal(\"Neha\");",
+									"    pm.expect(responseJson.lastname).to.equal(\"Jain\");",
+									"    pm.expect(responseJson.totalprice).to.equal(201);",
+									"    pm.expect(responseJson.depositpaid).to.equal(true);",
+									"    pm.expect(responseJson.bookingdates.checkin).to.equal(\"2023-03-05\");",
+									"    pm.expect(responseJson.bookingdates.checkout).to.equal(\"2023-03-08\");",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/booking/{{booking_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking",
+								"{{booking_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"   // pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"Test response data\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.firstname).to.equal(\"Nidhi\");",
+									"    pm.expect(responseJson.lastname).to.equal(\"Jain\");",
+									"    pm.expect(responseJson.totalprice).to.equal(201);",
+									"    pm.expect(responseJson.depositpaid).to.equal(true);",
+									"    pm.expect(responseJson.bookingdates.checkin).to.equal(\"2023-03-05\");",
+									"    pm.expect(responseJson.bookingdates.checkout).to.equal(\"2023-03-08\");",
+									"})",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "password123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\" : \"Nidhi\",\n    \"lastname\" : \"Jain\",\n    \"totalprice\" : 201,\n    \"depositpaid\" : true,\n    \"bookingdates\" : {\n        \"checkin\" : \"2023-03-05\",\n        \"checkout\" : \"2023-03-08\"\n    },\n    \"additionalneeds\" : \"Breakfast\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking/{{booking_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking",
+								"{{booking_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Booking by Id\",()=>{",
+									"    pm.expect(pm.response.code).is.eq(201);",
+									"    pm.expect(pm.response.text()).equal(\"Created\");",
+									"    postman.clearEnvironmentVariable(\"booking_id\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "password123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/booking/{{booking_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking",
+								"{{booking_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth - CreateToken using csv",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Authenticate user\",() => {",
+							"    var jsonData = pm.response.json();",
+							"    if(jsonData.token !== undefined)",
+							"    {",
+							"        pm.expect(pm.response.code).eql(data.expected_http_code);",
+							"        postman.clearEnvironmentVariable(\"access_token\");",
+							"        postman.setEnvironmentVariable(\"access_token\",jsonData.token);",
+							"    }",
+							"    else{",
+							"        pm.expect(jsonData.reason).eql(\"Bad credentials\");",
+							"        postman.clearEnvironmentVariable(\"access_token\");",
+							"    }",
+							"",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\" : \"{{username}}\",\n    \"password\" : \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/auth",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetBookingIds - All IDs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetBookingIds - Filter by Name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking?firstname=Sally&lastname=Ericsson",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking"
+					],
+					"query": [
+						{
+							"key": "firstname",
+							"value": "Sally"
+						},
+						{
+							"key": "lastname",
+							"value": "Ericsson"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PatchUpdate",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\" : \"James\",\n    \"lastname\" : \"Brown\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/booking/{{booking_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"booking",
+						"{{booking_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
