@@ -1,0 +1,10 @@
+{
+  "baseUrl": "https://restful-booker.herokuapp.com",
+  "testDataDirectory": "src/test/resources",
+  "authApiPath": "/auth",
+  "createBookingApiPath": "/booking",
+  "updateBookingApiPath": "/booking/{bookingId}",
+  "deleteBookingApiPath": "/booking/{bookingId}",
+  "getAllBookingsApiPath": "/booking",
+  "getBookingByIdApiPath": "/booking/{bookingId}"
+}

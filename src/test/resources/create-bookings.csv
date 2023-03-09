@@ -1,0 +1,4 @@
+firstname,lastname,totalprice,depositpaid,checkin,checkout,additionalneeds,expected_status_code
+fname1,lname1,100,true,2023-03-02,2023-02-23,BreakFast,200
+fname2,lname2,140,false,2023-03-04,2023-02-28,BreakFastLunch,200
+fname3,,140,false,2023-03-04,2023-02-28,BreakFastLunch,500
